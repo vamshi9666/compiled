@@ -241,7 +241,7 @@ describe('styled component behaviour', () => {
     expect(actual).toInclude('"--_1poneq5":"very"+((()=>{return props.color;})()||"")+"dark"');
   });
 
-  it.only('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
+  it('should move suffix and prefix of a dynamic arrow function with a body into an IIFE by preventing passing down invalid html attributes to the node', () => {
     const actual = transform(`
       import { styled } from '@compiled/react';
 
