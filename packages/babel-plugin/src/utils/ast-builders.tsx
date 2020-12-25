@@ -445,7 +445,7 @@ export const getPropValue = (
  *
  * @param cssOutput CSSOutput
  */
-export const transformItemCss = (cssOutput: CSSOutput) => {
+const transformItemCss = (cssOutput: CSSOutput) => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 

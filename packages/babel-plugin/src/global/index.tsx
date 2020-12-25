@@ -1,10 +1,17 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/core';
-import { compiledTemplate, transformItemCss } from '../utils/ast-builders';
-import { buildCss } from '../utils/css-builders';
+import { transformGlobalCss } from '@compiled/css';
+import { compiledTemplate } from '../utils/ast-builders';
+import { buildCss, getItemCss } from '../utils/css-builders';
+import { CSSOutput } from '../utils/types';
 import { getJsxAttributeExpression, buildCodeFrameError } from '../utils/ast';
 import { Metadata } from '../types';
 
+/**
+ * Returns a `styles` prop if one is found.
+ *
+ * @param path
+ */
 const getStylesProp = (path: NodePath<t.JSXOpeningElement>) => {
   const stylesProp = path.node.attributes.find((attr): attr is t.JSXAttribute => {
     if (t.isJSXAttribute(attr) && attr.name.name === 'styles') {
@@ -15,6 +22,30 @@ const getStylesProp = (path: NodePath<t.JSXOpeningElement>) => {
   });
 
   return stylesProp;
+};
+
+/**
+ * Combines all CSS sheets into one.
+ *
+ * @param cssOutput
+ * @param meta
+ */
+const mergeCSSOutput = (cssOutput: CSSOutput, meta: Metadata): string => {
+  let CSS = '';
+
+  cssOutput.css.forEach((item) => {
+    CSS += getItemCss(item);
+
+    if (item.type !== 'unconditional') {
+      throw buildCodeFrameError(
+        "Global component doesn't support conditional CSS rules",
+        item.expression,
+        meta.parentPath
+      );
+    }
+  });
+
+  return CSS;
 };
 
 export function visitGlobalPath(path: NodePath<t.JSXOpeningElement>, meta: Metadata): void {
@@ -29,22 +60,22 @@ export function visitGlobalPath(path: NodePath<t.JSXOpeningElement>, meta: Metad
   }
 
   const styles = getJsxAttributeExpression(stylesProp);
-  const css = buildCss(styles, meta);
+  const rawCSS = buildCss(styles, meta);
 
-  if (css.css.length === 0) {
+  if (rawCSS.css.length === 0) {
     path.parentPath.replaceWith(t.nullLiteral());
     return;
   }
 
-  if (css.variables.length > 0) {
+  if (rawCSS.variables.length > 0) {
     throw buildCodeFrameError(
-      `Global component doesn't support dynamic CSS please refactor it to be static`,
-      css.variables[0].expression,
+      `Global component doesn't support dynamic CSS declarations`,
+      rawCSS.variables[0].expression,
       meta.parentPath
     );
   }
 
-  const transformedCSS = transformItemCss(css);
+  const CSS = transformGlobalCss(mergeCSSOutput(rawCSS, meta));
 
-  path.parentPath.replaceWith(compiledTemplate(undefined, transformedCSS.sheets, meta));
+  path.parentPath.replaceWith(compiledTemplate(undefined, [CSS], meta));
 }

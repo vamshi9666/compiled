@@ -14,9 +14,7 @@ import { sortAtRulePseudos } from '../plugins/sort-at-rule-pseudos';
 /**
  * Will transform CSS into multiple CSS sheets.
  *
- * @param selector CSS selector such as `.class`
  * @param css CSS string
- * @param opts Transformation options
  */
 export const transformCss = (css: string): { sheets: string[]; classNames: string[] } => {
   const sheets: string[] = [];
