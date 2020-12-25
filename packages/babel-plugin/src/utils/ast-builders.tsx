@@ -346,9 +346,11 @@ export const compiledTemplate = (
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
-    `<CC>
-  <CS ${nonceAttribute}>{%%cssNode%%}</CS>${node ? '\n{%%jsxNode%%}' : ''}
-</CC>`,
+    `
+  <CC>
+    <CS ${nonceAttribute}>{%%cssNode%%}</CS>${node ? '\n    {%%jsxNode%%}' : ''}
+  </CC>
+  `,
     {
       plugins: ['jsx'],
     }

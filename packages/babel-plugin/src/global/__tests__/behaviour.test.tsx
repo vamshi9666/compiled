@@ -25,8 +25,8 @@ describe('global component transform', () => {
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       const _ = \\":root{font-size:20px}\\";
       <CC>
-        <CS>{[_]}</CS>
-      </CC>;"
+          <CS>{[_]}</CS>
+        </CC>;"
     `);
   });
 
