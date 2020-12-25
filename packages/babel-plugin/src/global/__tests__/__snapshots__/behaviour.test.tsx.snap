@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`global component transform should throw if any dynamic declarations were found 1`] = `
+"unknown: Global component doesn't support dynamic CSS please refactor it to be static (7:26).
+  5 |         fontSize = 20;
+  6 | 
+> 7 |         <Global styles={{ fontSize }} />
+    |                           ^^^^^^^^
+  8 |       "
+`;

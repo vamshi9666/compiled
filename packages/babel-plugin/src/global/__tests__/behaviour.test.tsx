@@ -5,6 +5,7 @@ const transform = (code: TemplateStringsArray) => {
   return transformSync(code[0], {
     configFile: false,
     babelrc: false,
+    highlightCode: false,
     plugins: [babelPlugin],
   })?.code;
 };
@@ -22,9 +23,10 @@ describe('global component transform', () => {
 
       import * as React from 'react';
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
-      <Global styles={{
-        fontSize: 20
-      }} />;"
+      const _ = \\"._1wybgktf{font-size:20px}\\";
+      <CC>
+        <CS>{[_]}</CS>
+      </CC>;"
     `);
   });
 
@@ -58,5 +60,18 @@ describe('global component transform', () => {
       import { ax, ix, CC, CS } from \\"@compiled/react/runtime\\";
       null;"
     `);
+  });
+
+  it('should throw if any dynamic declarations were found', () => {
+    expect(() => {
+      transform`
+        import { Global } from '@compiled/react';
+
+        let fontSize = 10;
+        fontSize = 20;
+
+        <Global styles={{ fontSize }} />
+      `;
+    }).toThrowErrorMatchingSnapshot();
   });
 });

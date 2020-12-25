@@ -338,21 +338,22 @@ const styledTemplate = (opts: StyledTemplateOpts, meta: Metadata): t.Node => {
  * @param sheets Stylesheets
  * @param meta Metadata
  */
-export const compiledTemplate = (node: t.Expression, sheets: string[], meta: Metadata): t.Node => {
+export const compiledTemplate = (
+  node: t.Expression | undefined,
+  sheets: string[],
+  meta: Metadata
+): t.Node => {
   const nonceAttribute = meta.state.opts.nonce ? `nonce={${meta.state.opts.nonce}}` : '';
 
   return template(
-    `
-  <CC>
-    <CS ${nonceAttribute}>{%%cssNode%%}</CS>
-    {%%jsxNode%%}
-  </CC>
-  `,
+    `<CC>
+  <CS ${nonceAttribute}>{%%cssNode%%}</CS>${node ? '\n{%%jsxNode%%}' : ''}
+</CC>`,
     {
       plugins: ['jsx'],
     }
   )({
-    jsxNode: node,
+    ...(node ? { jsxNode: node } : {}),
     cssNode: t.arrayExpression(unique(sheets).map((sheet) => hoistSheet(sheet, meta))),
   }) as t.Node;
 };
@@ -444,7 +445,7 @@ export const getPropValue = (
  *
  * @param cssOutput CSSOutput
  */
-const transformItemCss = (cssOutput: CSSOutput) => {
+export const transformItemCss = (cssOutput: CSSOutput) => {
   const sheets: string[] = [];
   const classNames: t.Expression[] = [];
 
