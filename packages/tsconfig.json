@@ -6,6 +6,7 @@
     { "path": "react/tsconfig.json" },
     { "path": "jest/tsconfig.json" },
     { "path": "utils/tsconfig.json" },
-    { "path": "cli/tsconfig.json" }
+    { "path": "cli/tsconfig.json" },
+    { "path": "extract/tsconfig.json" }
   ]
 }
